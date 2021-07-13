@@ -73,8 +73,9 @@ class Usuario
             $destinoFinal = $destino . $correo . "_" . $id_agregado . "." . $extension[0];
             $archivos['foto']->moveTo($destinoFinal);
 
+            $destinoPath = "/../Fotos/" . $correo . "_" . $id_agregado . "." . $extension[0];
             #AGREGAR: MODIFICAR PARA PONER EL PATHFOTO EN LA BD
-            $miUser->foto = $destinoFinal;
+            $miUser->foto = $destinoPath;
             $miUser->AgregarFotoBD();
         }
         

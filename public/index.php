@@ -13,6 +13,8 @@ require_once __DIR__ . '/../src/poo/Middlewares.php';
 
 $app = AppFactory::create();
 
+
+
 ###########################################################################################################
 
 $app->post('/usuarios', Usuario::class . ':AgregarUsuario')->add(MW::class . '::ValidarCorreoEnLaBD')->add(MW::class . '::ValidarDatosVaciosUsuario')->add(MW::class . ':ValidarDatosSeteadosUsuario');
@@ -28,7 +30,7 @@ $app->post('/login', Usuario::class . ':LoginPost')->add(MW::class . ':ValidarDa
 $app->get('/login', Usuario::class . ':LoginGet');
 
 #PARTE 3
-$app->delete('/', Auto::class . ':EliminarAuto')->add(MW::class . '::VerificarPropietario')->add(MW::class . ':VerificarTokenValido');
+$app->delete('/', Auto::class . ':EliminarAuto');//->add(MW::class . '::VerificarPropietario')->add(MW::class . ':VerificarTokenValido');
 
 $app->put('/', Auto::class . ':ModificarAuto')->add(MW::class . ':VerificarEncargado')->add(MW::class . ':VerificarTokenValido');
 ###########################################################################################################

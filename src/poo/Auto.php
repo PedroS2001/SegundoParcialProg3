@@ -80,6 +80,8 @@ class Auto
 
 
 
+
+    
     #PARTE 3!
 
     public function EliminarAuto(Request $request, Response $response, array $args): Response
@@ -88,10 +90,16 @@ class Auto
         $respuesta->status = 200;
         $respuesta->mensaje = "";
 
-        //$arrayDeParametros = $request->getParsedBody();
-        //$id = $arrayDeParametros['id_auto']; 
+            #POR RAW
+        //Obtengo el raw como texto(es un json)
+        $json = $request->getBody();
+        //lo parseo a objeto
+        $jsonParseado = json_decode($json);
+        //como es un objeto accedo a su valor mediante flecha
+        $id = $jsonParseado->id_auto;
 
-        $id = $request->getHeader("id_auto")[0];
+            #POR HEADER
+        //$id = $request->getHeader("id_auto")[0];
         
         $token = $request->getHeader("token")[0];
 
@@ -142,10 +150,23 @@ class Auto
         $retorno->mensaje = "No se pudo Modificar el Auto";
         $retorno->status = 418;
 
-        //$arrayDeParametros = $request->getParsedBody();
-        //$objJson = json_decode($arrayDeParametros['autoJson']);     
-        $objJson = json_decode($request->getHeader("auto")[0]);   
-        $id = $request->getHeader("id_auto")[0];   
+        #PASADO POR RAW;
+            //Obtengo el raw como texto
+            $json = $request->getBody();
+            //lo parseo a objeto
+            $jsonParseado = json_decode($json);
+            //como es un objeto accedo a sus dos valores mediante flecha
+            $objJson = $jsonParseado->auto;
+            $id = $jsonParseado->id_auto;
+        
+        #PASADO POR BODY(que no se puede)
+            //$arrayDeParametros = $request->getParsedBody();
+            //$objJson = json_decode($arrayDeParametros['autoJson']);     
+
+        #PASADO POR HEADER
+            //$objJson = json_decode($request->getHeader("auto")[0]);   
+            //$id = $request->getHeader("id_auto")[0];   
+
         
         $verificar = Autentificadora::VerificarJWT($token);
         if($verificar->verificado == true)
@@ -184,9 +205,9 @@ class Auto
 
 		return $newResponse->withHeader('Content-Type', 'application/json');
 
-
     }
 
+    
 
 
 

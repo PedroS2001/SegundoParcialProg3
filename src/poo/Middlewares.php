@@ -304,7 +304,7 @@ class MW
     public function VerificarEncargado(Request $request, RequestHandler $handler) : ResponseMW
     {
         $datos = new stdClass;
-        $datos->propietario = false;
+        $datos->encargado = false;
         $datos->mensaje = "Usted no es encargado";
         $datos->status = 409;
 
