@@ -30,7 +30,7 @@ $app->post('/login', Usuario::class . ':LoginPost')->add(MW::class . ':ValidarDa
 $app->get('/login', Usuario::class . ':LoginGet');
 
 #PARTE 3
-$app->delete('/', Auto::class . ':EliminarAuto');//->add(MW::class . '::VerificarPropietario')->add(MW::class . ':VerificarTokenValido');
+$app->delete('/', Auto::class . ':EliminarAuto')->add(MW::class . '::VerificarPropietario')->add(MW::class . ':VerificarTokenValido');
 
 $app->put('/', Auto::class . ':ModificarAuto')->add(MW::class . ':VerificarEncargado')->add(MW::class . ':VerificarTokenValido');
 ###########################################################################################################

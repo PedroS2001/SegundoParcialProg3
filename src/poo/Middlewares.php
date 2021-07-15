@@ -545,8 +545,8 @@ class MW
                     }
 
                     $todosLosApellidos = array_count_values($todosLosApellidos);
-
-                    $datos->mensaje = $todosLosApellidos;
+                    $datos->mensaje = "Listado de apellidos y sus cantidades";
+                    $datos->dato = $todosLosApellidos;
                 }
 
 
