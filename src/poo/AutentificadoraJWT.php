@@ -8,7 +8,7 @@ class Autentificadora
     private static $aud = NULL;
 
     //5 minutos por default
-    public static function CrearJWT($data, $exp = 30) : string
+    public static function CrearJWT($data, $exp = (60*5)) : string
     {
         $time = time();
         self::$aud = self::Aud();

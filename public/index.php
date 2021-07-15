@@ -19,11 +19,11 @@ $app = AppFactory::create();
 
 $app->post('/usuarios', Usuario::class . ':AgregarUsuario')->add(MW::class . '::ValidarCorreoEnLaBD')->add(MW::class . '::ValidarDatosVaciosUsuario')->add(MW::class . ':ValidarDatosSeteadosUsuario');
 
-$app->get('/', Usuario::class . ':MostrarTodosLosUsuarios' );
+$app->get('/', Usuario::class . ':MostrarTodosLosUsuarios' )->add(MW::class . ':AccedePropietarioB')->add(MW::class . ':AccedeEncargadoB')->add(MW::class . ':AccedeEmpleadoB');
 
 $app->post('/', Auto::class . ':AgregarAuto')->add(MW::class . ':VerificarAuto');
 
-$app->get('/autos', Auto::class . ':MostrarTodosLosAutos');
+$app->get('/autos[/{id}]', Auto::class . ':MostrarTodosLosAutos')->add(MW::class . '::AccedePropietario')->add(MW::class . ':AccedeEmpleado')->add(MW::class . ':AccedeEncargado');
 
 $app->post('/login', Usuario::class . ':LoginPost')->add(MW::class . ':ValidarDatosEnLaBD')->add(MW::class . '::ValidarDatosVaciosUsuario')->add(MW::class . ':ValidarDatosSeteadosUsuario');
 

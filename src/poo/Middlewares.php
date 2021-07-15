@@ -3,6 +3,7 @@
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as ResponseMW;
+use Slim\Routing\RouteContext;
 
 require_once "AccesoDatos.php";
 require_once "AutentificadoraJWT.php";
@@ -329,10 +330,234 @@ class MW
 
 
 
+    function AccedeEncargado(Request $request, RequestHandler $handler) : ResponseMW
+    {
+        $response = $handler->handle($request);
+        $datos = json_decode($response->getBody());
+
+        $token = $request->getHeader("token")[0];
+
+        $payloadUser = Autentificadora::ObtenerPayLoad($token);
+        $datosUser = $payloadUser->payload->data;
+        if($datosUser->perfil == 'encargado')
+        {
+    
+            $tabla = $datos->dato;
+    
+            foreach($tabla as $item)
+            {
+                unset($item->id);
+            }
+    
+            $datos->dato = $tabla;
+        }
+
+        $newResponse = new ResponseMW($datos->status);
+        $newResponse->getBody()->write(json_encode($datos));
+      
+        return $newResponse->withHeader('Content-Type', 'application/json');
+    }
 
 
+    function AccedeEmpleado(Request $request, RequestHandler $handler) : ResponseMW
+    {
+        $response = $handler->handle($request);
+        $datos = json_decode($response->getBody());
+
+        $token = $request->getHeader("token")[0];
+
+        $payloadUser = Autentificadora::ObtenerPayLoad($token);
+        if($payloadUser->payload != null)
+        {
+            $datosUser = $payloadUser->payload->data;
+            if($datosUser->perfil == 'empleado')
+            {
+                $tabla = $datos->dato;
+        
+                $colores = [];
+                foreach($tabla as $item)
+                {
+                    array_push($colores,$item->color);
+                }
+                $cantColores = array_count_values($colores);
+                $datos->mensaje = "Hay " . count($cantColores) . " colores distintos.";
+            }
+        }
+
+        $newResponse = new ResponseMW($datos->status);
+        $newResponse->getBody()->write(json_encode($datos));
+      
+        return $newResponse->withHeader('Content-Type', 'application/json');
+    }
 
 
+    static function AccedePropietario(Request $request, RequestHandler $handler) : ResponseMW
+    {
+        $response = $handler->handle($request);
+        
+        if(isset(RouteContext::fromRequest($request)->getRoute()->getArguments()['id']))
+        {
+            $id = RouteContext::fromRequest($request)->getRoute()->getArguments()['id'];
+        }
+        else
+        {
+            $id = "noid";
+        }
+        $datos = json_decode($response->getBody());
+
+        $token = $request->getHeader("token")[0];
+
+        $payloadUser = Autentificadora::ObtenerPayLoad($token);
+        $datosUser = $payloadUser->payload->data;
+        if($datosUser->perfil == 'propietario')
+        {
+            $tabla = $datos->dato;
+
+            if($id != 'noid')
+            {
+                foreach($tabla as $item)
+                {
+                    if($item->id == $id)
+                    {
+                        $datos->mensaje = 'ACA TENES TU AUTO';
+                        $datos->dato = $item;
+                    }
+                }
+            }
+    
+        }
+
+
+        $newResponse = new ResponseMW($datos->status);
+        $newResponse->getBody()->write(json_encode($datos));
+      
+        return $newResponse->withHeader('Content-Type', 'application/json');
+    }
+
+
+    function AccedeEncargadoB(Request $request, RequestHandler $handler) : ResponseMW
+    {
+        $response = $handler->handle($request);
+        $datos = json_decode($response->getBody());
+
+        $token = $request->getHeader("token")[0];
+
+        $payloadUser = Autentificadora::ObtenerPayLoad($token);
+        $datosUser = $payloadUser->payload->data;
+        if($datosUser->perfil == 'encargado')
+        {
+            $tabla = $datos->dato;
+    
+            foreach($tabla as $item)
+            {
+                unset($item->id);
+                unset($item->clave);
+            }
+    
+            $datos->dato = $tabla;
+        }
+
+        $newResponse = new ResponseMW($datos->status);
+        $newResponse->getBody()->write(json_encode($datos));
+      
+        return $newResponse->withHeader('Content-Type', 'application/json');
+    }
+
+
+    function AccedeEmpleadoB(Request $request, RequestHandler $handler) : ResponseMW
+    {
+        $response = $handler->handle($request);
+        $datos = json_decode($response->getBody());
+
+        $token = $request->getHeader("token")[0];
+
+        $payloadUser = Autentificadora::ObtenerPayLoad($token);
+        $datosUser = $payloadUser->payload->data;
+        if($datosUser->perfil == 'empleado')
+        {
+            $tabla = $datos->dato;
+    
+            foreach($tabla as $item)
+            {
+                unset($item->id);
+                unset($item->clave);
+                unset($item->perfil);
+                unset($item->correo);
+            }
+    
+            $datos->dato = $tabla;
+        }
+
+        $newResponse = new ResponseMW($datos->status);
+        $newResponse->getBody()->write(json_encode($datos));
+      
+        return $newResponse->withHeader('Content-Type', 'application/json');
+    }
+
+
+    function AccedePropietarioB(Request $request, RequestHandler $handler) : ResponseMW
+    {
+        $response = $handler->handle($request);
+        $datos = json_decode($response->getBody());
+
+        $token = $request->getHeader("token")[0];
+        if(isset(RouteContext::fromRequest($request)->getRoute()->getArguments()['apellido']))
+        {
+            $apellido = RouteContext::fromRequest($request)->getRoute()->getArguments()['apellido'];
+        }
+        else
+        {
+            $apellido = "noApellido";
+        }
+
+        $payloadUser = Autentificadora::ObtenerPayLoad($token);
+        if($payloadUser->payload != null)
+        {
+            $datosUser = $payloadUser->payload->data;
+            if($datosUser->perfil == 'propietario')
+            {
+                $tabla = $datos->dato;
+                $listaApellidos = [];
+                $todosLosApellidos = [];
+        
+                if($apellido != "noApellido")
+                {
+                    foreach($tabla as $item)
+                    {
+                        if($tabla->apellido == $apellido)
+                        {
+                            array_push($listaApellidos, $tabla->apellido);
+                        }
+                    }
+
+                    if(count($listaApellidos) == NULL){
+                        $cantidad = 0;
+                    }else{
+                        $cantidad = count($listaApellidos);
+                    }
+                    $datos->mensaje = $cantidad;
+
+                }
+                else
+                {
+                    foreach($tabla as $item){
+                        array_push($todosLosApellidos,$item->apellido);
+                    }
+
+                    $todosLosApellidos = array_count_values($todosLosApellidos);
+
+                    $datos->mensaje = $todosLosApellidos;
+                }
+
+
+            }
+        }
+
+        $newResponse = new ResponseMW($datos->status);
+        $newResponse->getBody()->write(json_encode($datos));
+      
+        return $newResponse->withHeader('Content-Type', 'application/json');
+    }
 
 
 
